@@ -1,0 +1,33 @@
+{
+  "name": "dimov-mini-saas-api",
+  "version": "1.0.0",
+  "description": "Mini SaaS Rest API",
+  "license": "MIT",
+  "author": "Toure A. Karim",
+  "keywords": [
+    "nodejs",
+    "supabase"
+  ],
+  "type": "module",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "db:migrate": "node src/database/migrate.js",
+    "db:seed": "node src/database/seed.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.108.2",
+    "bcryptjs": "^3.0.3",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "swagger-jsdoc": "^6.3.0",
+    "swagger-ui-express": "^5.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}
