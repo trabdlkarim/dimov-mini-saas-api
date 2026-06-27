@@ -1,6 +1,8 @@
+import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import config from "../config/index.js";
 import generateToken from "../utils/token.js";
+import userService from "./userService.js";
 
 const authService = {
   async authenticate(credentials) {
@@ -26,10 +28,18 @@ const authService = {
 
     // Generate JWT token
     const token = generateToken(user.id);
-    
+
     delete user.password;
 
     return { user, token };
+  },
+  
+  async getUserFromToken(token) {
+    try {
+      const payload = jwt.verify(token, config.jwt.secret);
+      const user = await userService.getUserById(payload.id);
+      return user;
+    } catch (error) {}
   },
 };
 

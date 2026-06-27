@@ -1,14 +1,21 @@
 import config from "../config/index.js";
 import { setHttpOnlyCookie, unsetHttpOnlyCookie } from "../utils/cookie.js";
 import service from "../services/authService.js";
-import controller from "./userController.js";
+import userController from "./userController.js";
 
 const authController = {
   async register(req, res) {
-    return controller.createUser(req, res);
+    userController.createUser(req, res);
   },
 
   async login(req, res) {
+    if (req.cookies?.jwt) {
+      const token = req.cookies.jwt;
+      const user = await service.getUserFromToken(token);
+      const message = "Already authenticated!";
+      if (user) return res.status(200).json({ message, user, token });
+    }
+
     const credentials = req.body;
     try {
       const data = await service.authenticate(credentials);
