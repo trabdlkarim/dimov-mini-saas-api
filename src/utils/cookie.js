@@ -4,7 +4,7 @@ export const setHttpOnlyCookie = (res, name, value, maxAge) => {
   res.cookie(name, value, {
     httpOnly: true,
     secure: config.env === "production",
-    sameSite: "strict",
+    sameSite: "lax",
     maxAge: maxAge,
   });
 };

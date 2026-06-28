@@ -26,7 +26,10 @@ const authController = {
 
       const numOfDays = parseInt(config.jwt.expires.slice(0, -1));
       const milliSecsInOneDay = 1000 * 60 * 60 * 24;
-      setHttpOnlyCookie(res, "jwt", data.token, milliSecsInOneDay * numOfDays);
+      const expiresIn = milliSecsInOneDay * numOfDays;
+
+      setHttpOnlyCookie(res, "jwt", data.token, expiresIn);
+      data.expires = Date.now() + expiresIn;
 
       res.status(200).json(data);
     } catch (error) {
