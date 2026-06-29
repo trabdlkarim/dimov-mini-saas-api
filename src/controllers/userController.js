@@ -38,11 +38,14 @@ const userController = {
   async updateUser(req, res) {
     try {
       const { id } = req.params;
+      if (!(await service.userExists(id))) {
+        return res
+          .status(404)
+          .json({ error: `The user ${id} does not exist.` });
+      }
       const userData = req.body;
       const updatedUser = await service.updateUser(id, userData);
-      if (!updatedUser || updatedUser.length === 0) {
-        return res.status(404).json({ error: "User not found" });
-      }
+
       res.status(200).json(updatedUser);
     } catch (error) {
       res.status(400).json({ error: error.message });
@@ -52,6 +55,11 @@ const userController = {
   async deleteUser(req, res) {
     try {
       const { id } = req.params;
+      if (!(await service.userExists(id))) {
+        return res
+          .status(404)
+          .json({ error: `The user ${id} does not exist.` });
+      }
       const result = await service.deleteUser(id);
       res.status(200).json(result);
     } catch (error) {

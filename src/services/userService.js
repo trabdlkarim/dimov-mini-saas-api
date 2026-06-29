@@ -24,7 +24,7 @@ const userService = {
   // Allow adding multiple users at once
   async createUser(userData) {
     let single = false;
-    
+
     if (!Array.isArray(userData)) {
       userData = [userData];
       single = true;
@@ -69,7 +69,7 @@ const userService = {
       .from("users")
       .update(updates)
       .eq("id", id)
-      .select("id,name,email");
+      .select("id,name,email").single();
 
     if (error) throw new Error(error.message);
 
@@ -82,6 +82,15 @@ const userService = {
     if (error) throw new Error(error.message);
 
     return { success: true, message: "User successfully deleted." };
+  },
+  async userExists(userId) {
+    const { data: user, error } = await config.supabase
+      .from("users")
+      .select()
+      .eq("id", userId)
+      .single();
+    if (error) return false;
+    else return user;
   },
 };
 
