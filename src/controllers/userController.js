@@ -3,7 +3,9 @@ import service from "../services/userService.js";
 const userController = {
   async listUsers(req, res) {
     try {
-      const users = await service.getUsers();
+      let { ids } = req.query;
+      if (ids) ids = ids.split(",");
+      const users = await service.getUsers(ids);
       res.status(200).json(users);
     } catch (error) {
       res.status(500).json({ error: error.message });
