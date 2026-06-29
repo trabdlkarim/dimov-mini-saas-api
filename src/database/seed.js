@@ -39,6 +39,61 @@ const users = [
   },
 ];
 
+const teams = [
+  {
+    name: "Frontend Team",
+    description:
+      "Responsible for building and maintaining the user interface and client-side logic of the application.",
+  },
+  {
+    name: "Backend Team",
+    description:
+      "Handles server-side logic, APIs, authentication, and database management.",
+  },
+  {
+    name: "DevOps Team",
+    description:
+      "Manages infrastructure, CI/CD pipelines, deployment processes, and system reliability.",
+  },
+  {
+    name: "QA Team",
+    description:
+      "Ensures product quality through automated and manual testing strategies.",
+  },
+  {
+    name: "Design Team",
+    description:
+      "Focuses on UI/UX design, user research, and creating consistent design systems.",
+  },
+  {
+    name: "Product Team",
+    description:
+      "Defines product vision, gathers requirements, and coordinates between technical and business stakeholders.",
+  },
+];
+
+const teamMembers = [
+  { team_id: 1, user_id: 1 },
+  { team_id: 1, user_id: 2 },
+
+  { team_id: 2, user_id: 3 },
+  { team_id: 2, user_id: 4 },
+
+  { team_id: 3, user_id: 5 },
+
+  { team_id: 4, user_id: 6 },
+
+  { team_id: 5, user_id: 7 },
+
+  { team_id: 6, user_id: 1 },
+  { team_id: 6, user_id: 3 },
+
+  { team_id: 3, user_id: 2 },
+  { team_id: 4, user_id: 5 },
+  { team_id: 5, user_id: 4 },
+  { team_id: 2, user_id: 7 },
+];
+
 const projects = [
   {
     name: "Website Redesign",
@@ -191,6 +246,36 @@ const seedUsers = async () => {
   }
 };
 
+const seedTeams = async () => {
+  console.log("Seeding teams...");
+  for (const team of teams) {
+    const { data, error } = await config.supabase
+      .from("teams")
+      .insert(team)
+      .select();
+    if (error) console.error(`Failed team: ${team.name}`);
+    else console.log(`Created team: ${team.name}`);
+  }
+};
+
+const seedTeamMembers = async () => {
+  console.log("Seeding team members...");
+  for (const member of teamMembers) {
+    const { data, error } = await config.supabase
+      .from("team_members")
+      .insert(member)
+      .select();
+    if (error)
+      console.error(
+        `Failed membership: (team=${member.team_id}, user=${member.user_id})`,
+      );
+    else
+      console.log(
+        `Created membership: (team=${member.team_id}, user=${member.user_id})`,
+      );
+  }
+};
+
 const seedProjects = async () => {
   console.log("Seeding projects...");
   for (const project of projects) {
@@ -205,6 +290,8 @@ const seedProjects = async () => {
 
 const main = async () => {
   await seedUsers();
+  await seedTeams();
+  await seedTeamMembers();
   await seedProjects();
   console.log("Seeding completed!");
 };
