@@ -3,27 +3,15 @@ import service from "../services/projectService.js";
 const projectController = {
   async listProjects(req, res) {
     try {
-      const projects = await service.getProjects();
-      res.status(200).json(projects);
-    } catch (error) {
-      res.status(500).json({ error: error.message });
-    }
-  },
-
-  async searchProjects(req, res) {
-    try {
-      const { query } = req.params;
-      const projects = await service.searchProjects(query);
-      res.status(200).json(projects);
-    } catch (error) {
-      res.status(500).json({ error: error.message });
-    }
-  },
-
-  async filterProjects(req, res) {
-    try {
-      const { filter } = req.params;
-      const projects = await service.filterProjects(filter);
+      const { search, filter } = req.query;
+      let projects = [];
+      if (search) {
+        projects = await service.searchProjects(search);
+      } else if (filter) {
+        projects = await service.filterProjects(filter);
+      } else {
+        projects = await service.getProjects();
+      }
       res.status(200).json(projects);
     } catch (error) {
       res.status(500).json({ error: error.message });

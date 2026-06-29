@@ -51,20 +51,22 @@ const projectService = {
   },
 
   // Search projects by name
-  async searchProjects(query) {
-    if (!query) throw new Error("The 'query' query param is riquired.");
-    const { data, error } = await supabase
+  async searchProjects(search) {
+    if (!search) throw new Error("The 'search' param is riquired.");
+    search = search.trim();
+    const { data, error } = await config.supabase
       .from(table)
       .select()
-      .ilike("name", `%${query}%`);
+      .or(`name.ilike.%${search}%,description.ilike.%${search}%`);
     if (error) throw new Error(error.message);
     return data;
   },
 
   // ?filter=status:active,deadline:2026-03-25
   async filterProjects(filter) {
-     if (!filter) throw new Error("The 'filter' query param is riquired. Ex: ?filter=status:active,deadline:2026-03-25");
-    let query = supabase.from(table).select();
+     if (!filter) throw new Error("The 'filter' param is riquired.");
+    let query = config.supabase.from(table).select();
+    filter = filter.trim();
     const params = filter.split(",");
     for (const param of params) {
       let [column, value] = param.split(":");
