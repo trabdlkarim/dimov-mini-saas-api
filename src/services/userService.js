@@ -2,10 +2,10 @@ import bcrypt from "bcryptjs";
 import config from "../config/index.js";
 
 const userService = {
-  async getUsers() {
-    const { data, error } = await config.supabase
-      .from("users")
-      .select("id,name,email");
+  async getUsers(ids = []) {
+    let query = config.supabase.from("users").select("id,name,email");
+    if (ids) query = query.in("id", ids);
+    const { data, error } = await query;
     if (error) throw new Error(error.message);
     return data;
   },
@@ -21,14 +21,35 @@ const userService = {
     return result.data[0];
   },
 
+  // Allow adding multiple users at once
   async createUser(userData) {
-    const { name, email, password } = userData;
-    const salt = await bcrypt.genSalt(10);
-    const hashedPass = await bcrypt.hash(password, salt);
-    const { data, error } = await config.supabase
+    let single = false;
+    
+    if (!Array.isArray(userData)) {
+      userData = [userData];
+      single = true;
+    }
+
+    for (const user of userData) {
+      const { name, email, password } = user;
+      if (!email) throw new Error("The email field is required.");
+      if (password) {
+        const salt = await bcrypt.genSalt(10);
+        const hashedPass = await bcrypt.hash(password, salt);
+        user.password = hashedPass;
+      }
+    }
+
+    let query = config.supabase
       .from("users")
-      .insert([{ name, email, password: hashedPass }])
+      .insert(userData)
       .select("id,name,email,created_at");
+
+    if (single) {
+      query = query.limit(1).single();
+    }
+
+    const { data, error } = await query;
 
     if (error) throw new Error(error.message);
 
