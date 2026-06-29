@@ -22,9 +22,9 @@ const projectService = {
   async createProject(projectData) {
     let single = false;
 
-    if (!Array.isArray(projectData)){ 
-        projectData = [projectData];
-        single = true;
+    if (!Array.isArray(projectData)) {
+      projectData = [projectData];
+      single = true;
     }
 
     for (const project of projectData) {
@@ -35,7 +35,7 @@ const projectService = {
         );
       }
     }
-    
+
     let query = config.supabase.from(table).insert(projectData).select();
 
     if (single) {
@@ -54,7 +54,7 @@ const projectService = {
       .from(table)
       .update(projectData)
       .eq("id", id)
-      .select();
+      .select().single();
 
     if (error) throw new Error(error.message);
 
@@ -115,6 +115,15 @@ const projectService = {
       }
       return projects;
     }
+  },
+  async projectExists(projectId) {
+    const { data: project, error } = await config.supabase
+      .from(table)
+      .select()
+      .eq("id", projectId)
+      .single();
+    if (error) return false;
+    else return project;
   },
 };
 

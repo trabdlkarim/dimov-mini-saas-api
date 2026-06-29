@@ -50,11 +50,14 @@ const projectController = {
   async updateProject(req, res) {
     try {
       const { id } = req.params;
+      if (!(await service.projectExists(id))) {
+        return res
+          .status(404)
+          .json({ error: `The project ${id} does not exist.` });
+      }
       const projectData = req.body;
       const updated = await service.updateProject(id, projectData);
-      if (!updated || updated.length === 0) {
-        return res.status(404).json({ error: "Project not found" });
-      }
+
       res.status(200).json(updated);
     } catch (error) {
       res.status(400).json({ error: error.message });
@@ -64,6 +67,11 @@ const projectController = {
   async deleteProject(req, res) {
     try {
       const { id } = req.params;
+      if (!(await service.projectExists(id))) {
+        return res
+          .status(404)
+          .json({ error: `The project ${id} does not exist.` });
+      }
       const result = await service.deleteProject(id);
       res.status(200).json(result);
     } catch (error) {
