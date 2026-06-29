@@ -1,4 +1,5 @@
 import config from "../config/index.js";
+import userService from "./userService.js";
 
 const table = "projects";
 
@@ -19,7 +20,7 @@ const projectService = {
   },
 
   async createProject(projectData) {
-    if(!Array.isArray(projectData)) projectData = [projectData];
+    if (!Array.isArray(projectData)) projectData = [projectData];
     const { data, error } = await config.supabase
       .from(table)
       .insert(projectData)
@@ -64,7 +65,7 @@ const projectService = {
 
   // ?filter=status:active,deadline:2026-03-25
   async filterProjects(filter) {
-     if (!filter) throw new Error("The 'filter' param is riquired.");
+    if (!filter) throw new Error("The 'filter' param is riquired.");
     let query = config.supabase.from(table).select();
     filter = filter.trim();
     const params = filter.split(",");
@@ -79,6 +80,23 @@ const projectService = {
     const { data, error } = await query;
     if (error) throw new Error(error.message);
     return data;
+  },
+
+  async expandRelations(projects, expand) {
+    const relations = expand.split(",");
+    for (const relation of relations) {
+      let [foreignKey, alias] = relation.split(":");
+      if (foreignKey === "team_member") {
+        for (const project of projects) {
+            const teamMember = await userService.getUserById(project.team_member);
+            if(teamMember) {
+                let field = alias ? alias : "team_member";
+                project[field] = teamMember;
+            } 
+        }
+      }
+      return projects;
+    }
   },
 };
 

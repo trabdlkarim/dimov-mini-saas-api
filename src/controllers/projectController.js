@@ -3,7 +3,7 @@ import service from "../services/projectService.js";
 const projectController = {
   async listProjects(req, res) {
     try {
-      const { search, filter } = req.query;
+      const { search, filter, expand } = req.query;
       let projects = [];
       if (search) {
         projects = await service.searchProjects(search);
@@ -12,6 +12,12 @@ const projectController = {
       } else {
         projects = await service.getProjects();
       }
+
+      // Load project possible relations
+      if (projects && expand) {
+        projects = await service.expandRelations(projects, expand);
+      }
+
       res.status(200).json(projects);
     } catch (error) {
       res.status(500).json({ error: error.message });
