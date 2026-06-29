@@ -20,11 +20,29 @@ const projectService = {
   },
 
   async createProject(projectData) {
-    if (!Array.isArray(projectData)) projectData = [projectData];
-    const { data, error } = await config.supabase
-      .from(table)
-      .insert(projectData)
-      .select();
+    let single = false;
+
+    if (!Array.isArray(projectData)){ 
+        projectData = [projectData];
+        single = true;
+    }
+
+    for (const project of projectData) {
+      const { status, deadline, budget, team_member } = project;
+      if (!(status && deadline && budget && team_member)) {
+        throw new Error(
+          "Missing required field. The required fields are: status,deadline,budget,team_member",
+        );
+      }
+    }
+    
+    let query = config.supabase.from(table).insert(projectData).select();
+
+    if (single) {
+      query = query.limit(1).single();
+    }
+
+    const { data, error } = await query;
 
     if (error) throw new Error(error.message);
 
@@ -88,11 +106,11 @@ const projectService = {
       let [foreignKey, alias] = relation.split(":");
       if (foreignKey === "team_member") {
         for (const project of projects) {
-            const teamMember = await userService.getUserById(project.team_member);
-            if(teamMember) {
-                let field = alias ? alias : "team_member";
-                project[field] = teamMember;
-            } 
+          const teamMember = await userService.getUserById(project.team_member);
+          if (teamMember) {
+            let field = alias ? alias : "team_member";
+            project[field] = teamMember;
+          }
         }
       }
       return projects;
