@@ -174,6 +174,10 @@ Response
 
 Get an auth token for subsequent requests.
 
+```http
+POST /api/auth/login
+```
+
 Request
 
 ```json
@@ -381,4 +385,4 @@ Response
 
 ## Live Demo
 
-The api is accessible at https://dimov-mini-saas-api.vercel.app/api. Feel free to explore and play around with it.
+The api is accessible at https://dimov-mini-saas-api.vercel.app/. Feel free to explore and play around with it.
