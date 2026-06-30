@@ -2,7 +2,7 @@ import bcrypt from "bcryptjs";
 import config from "../config/index.js";
 
 const userService = {
-  async getUsers(ids = []) {
+  async getUsers(ids) {
     let query = config.supabase.from("users").select("id,name,email");
     if (ids) query = query.in("id", ids);
     const { data, error } = await query;

@@ -5,7 +5,7 @@ const table = "projects";
 
 const projectService = {
   async getProjects() {
-    const { data, error } = await config.supabase.from(table).select();
+    const { data, error } = await config.supabase.from(table).select().order('id', { ascending: false });
     if (error) throw new Error(error.message);
     return data;
   },
